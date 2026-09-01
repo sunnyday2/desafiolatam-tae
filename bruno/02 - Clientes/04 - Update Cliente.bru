@@ -1,0 +1,49 @@
+meta {
+  name: 04 - Update Cliente
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/clients/{{clienteId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "{{clienteNameUpdated}}",
+    "cuit": "{{clienteCuit}}",
+    "tax": "I",
+    "email": "{{clienteEmail}}"
+  }
+}
+
+script:pre-request {
+  bru.setVar("clienteNameUpdated", bru.getVar("clienteName") + " (Actualizado)");
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("name reflects the update", function () {
+    const c = res.getBody().data;
+    expect(c.name).to.equal(bru.getVar("clienteNameUpdated"));
+  });
+
+  test("id is unchanged after update", function () {
+    expect(String(res.getBody().data.id)).to.equal(String(bru.getVar("clienteId")));
+  });
+}

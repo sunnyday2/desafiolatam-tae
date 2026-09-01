@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "IMCOARCA API",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

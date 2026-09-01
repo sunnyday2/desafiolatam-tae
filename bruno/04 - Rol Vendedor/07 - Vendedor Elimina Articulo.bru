@@ -1,0 +1,27 @@
+meta {
+  name: 07 - Vendedor Elimina Articulo
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/products/{{vArticuloId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+assert {
+  res.status: eq 204
+}
+
+tests {
+  test("vendedor can delete productos (productos.delete) - 204", function () {
+    // Cleans up the articulo created above.
+    expect(res.getStatus()).to.equal(204);
+  });
+}

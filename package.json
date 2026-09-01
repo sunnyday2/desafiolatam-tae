@@ -1,0 +1,18 @@
+{
+  "name": "imcoarca-e2e",
+  "version": "1.0.0",
+  "description": "Playwright E2E test suite for IMCOARCA app (proyecto final)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "codegen": "playwright codegen https://imcoarca.leonardojose.dev/"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.45.3",
+    "dotenv": "^16.4.5"
+  }
+}

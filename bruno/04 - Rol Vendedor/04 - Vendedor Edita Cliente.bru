@@ -1,0 +1,39 @@
+meta {
+  name: 04 - Vendedor Edita Cliente
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/clients/{{vClienteId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "{{vClienteName}} (Editado por Vendedor)",
+    "cuit": "{{vClienteCuit}}",
+    "tax": "I"
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("vendedor can edit clientes (clientes.edit) - 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("name reflects the update", function () {
+    expect(res.getBody().data.name).to.contain("Editado por Vendedor");
+  });
+}

@@ -1,0 +1,71 @@
+meta {
+  name: 01 - Login Vendedor
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/login
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{email}}",
+    "password": "{{password}}"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (res.getStatus() === 200 && body && body.access_token) {
+    bru.setVar("accessToken", body.access_token);
+    // Flatten the role permissions for the assertions below.
+    const perms = (body.user && body.user.roles ? body.user.roles : [])
+      .reduce(function (acc, r) { return acc.concat(r.permissions || []); }, []);
+    bru.setVar("vendedorPermissions", JSON.stringify(perms));
+    const roleNames = (body.user && body.user.roles ? body.user.roles : []).map(function (r) { return r.name; });
+    bru.setVar("vendedorRoles", JSON.stringify(roleNames));
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.token_type: eq Bearer
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("authenticates as the Vendedor role", function () {
+    const roles = res.getBody().user.roles.map(function (r) { return r.name; });
+    expect(roles).to.include("Vendedor");
+  });
+
+  test("permission set matches the Vendedor role", function () {
+    const perms = res.getBody().user.roles.reduce(function (acc, r) {
+      return acc.concat(r.permissions || []);
+    }, []);
+    // Allowed for vendedor:
+    expect(perms).to.include("clientes.view");
+    expect(perms).to.include("clientes.create");
+    expect(perms).to.include("clientes.edit");
+    expect(perms).to.include("productos.create");
+    expect(perms).to.include("facturas.create");
+    // NOT allowed for vendedor:
+    expect(perms).to.not.include("clientes.delete");
+    expect(perms).to.not.include("facturas.edit");
+    expect(perms).to.not.include("facturas.delete");
+    // No cobranzas permissions at all.
+    const hasCobranzas = perms.some(function (p) { return p.indexOf("cobranzas") === 0; });
+    expect(hasCobranzas).to.equal(false);
+  });
+}

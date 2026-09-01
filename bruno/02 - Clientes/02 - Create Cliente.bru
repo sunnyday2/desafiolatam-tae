@@ -1,0 +1,70 @@
+meta {
+  name: 02 - Create Cliente
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/clients
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "{{clienteName}}",
+    "cuit": "{{clienteCuit}}",
+    "tax": "I",
+    "email": "{{clienteEmail}}"
+  }
+}
+
+script:pre-request {
+  // Generate unique test data for this run.
+  const suffix = Date.now().toString().slice(-8);
+  const digits = String(Math.floor(10000000 + Math.random() * 89999999));
+  bru.setVar("clienteName", "Cliente API Bruno " + suffix);
+  bru.setVar("clienteCuit", "30-" + digits + "-9");
+  bru.setVar("clienteEmail", "bruno." + suffix + "@testing.com");
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (body && body.data && body.data.id) {
+    bru.setVar("clienteId", body.data.id);
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.data.id: isDefined
+}
+
+tests {
+  test("status is 201 Created", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("response wraps the created cliente in data", function () {
+    expect(res.getBody()).to.have.property("data");
+    expect(res.getBody().data).to.be.an("object");
+  });
+
+  test("created cliente echoes the sent fields", function () {
+    const c = res.getBody().data;
+    expect(c).to.have.property("id");
+    expect(c.name).to.equal(bru.getVar("clienteName"));
+    expect(c.cuit).to.equal(bru.getVar("clienteCuit"));
+    expect(c.email).to.equal(bru.getVar("clienteEmail"));
+  });
+
+  test("server assigns a customer_code", function () {
+    expect(res.getBody().data).to.have.property("customer_code");
+  });
+}

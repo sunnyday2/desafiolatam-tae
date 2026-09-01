@@ -1,0 +1,76 @@
+meta {
+  name: 02 - Create Articulo
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/products
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "{{articuloName}}",
+    "sku": "{{articuloSku}}",
+    "line": {{lineId}},
+    "category": {{categoryId}},
+    "is_active": true,
+    "sale_price": 1500,
+    "cost_price": 800,
+    "stock_quantity": 5
+  }
+}
+
+script:pre-request {
+  const suffix = Date.now().toString().slice(-8);
+  bru.setVar("articuloName", "Articulo API Bruno " + suffix);
+  // SKU is numeric with a mask; send digits only.
+  bru.setVar("articuloSku", ("9" + suffix + suffix).slice(0, 12));
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (body && body.data && body.data.id) {
+    bru.setVar("articuloId", body.data.id);
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.data.id: isDefined
+}
+
+tests {
+  test("status is 201 Created", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("response wraps the created articulo in data", function () {
+    expect(res.getBody()).to.have.property("data");
+    expect(res.getBody().data).to.be.an("object");
+  });
+
+  test("created articulo echoes the sent fields", function () {
+    const p = res.getBody().data;
+    expect(p).to.have.property("id");
+    expect(p.name).to.equal(bru.getVar("articuloName"));
+    expect(p.is_active).to.equal(true);
+    // line/category come from the environment; compare numerically.
+    expect(Number(p.line)).to.equal(Number(bru.getEnvVar("lineId")));
+    expect(Number(p.category)).to.equal(Number(bru.getEnvVar("categoryId")));
+  });
+
+  test("line and category are resolved to names", function () {
+    const p = res.getBody().data;
+    expect(p).to.have.property("line_name");
+    expect(p).to.have.property("category_name");
+  });
+}

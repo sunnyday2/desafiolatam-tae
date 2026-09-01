@@ -1,0 +1,26 @@
+meta {
+  name: 06 - Verify Cliente Deleted
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/clients/{{clienteId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+assert {
+  res.status: eq 404
+}
+
+tests {
+  test("deleted cliente is no longer found (404)", function () {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

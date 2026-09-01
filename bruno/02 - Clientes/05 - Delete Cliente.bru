@@ -1,0 +1,26 @@
+meta {
+  name: 05 - Delete Cliente
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/clients/{{clienteId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+assert {
+  res.status: eq 204
+}
+
+tests {
+  test("status is 204 No Content", function () {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

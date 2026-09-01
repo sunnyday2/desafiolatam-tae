@@ -1,0 +1,40 @@
+meta {
+  name: 05 - Vendedor Elimina Cliente (API sin restriccion de rol)
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/clients/{{vClienteId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+docs {
+  # Hallazgo de seguridad
+
+  El rol **Vendedor** NO tiene el permiso `clientes.delete` (la UI oculta/bloquea
+  la acción de eliminar). Sin embargo, el backend **sí** permite la operación
+  `DELETE /clients/{id}` con un token de vendedor y responde `204`.
+
+  Es decir, la autorización por rol está aplicada solo en el frontend y no en la
+  API. Este request documenta ese comportamiento observado y, de paso, limpia el
+  cliente creado por las pruebas anteriores.
+}
+
+assert {
+  res.status: eq 204
+}
+
+tests {
+  test("API allows delete despite vendedor lacking clientes.delete (observed: 204)", function () {
+    // NOTE: This asserts the ACTUAL backend behavior. Role enforcement is
+    // frontend-only; the API does not block the vendedor from deleting.
+    expect(res.getStatus()).to.equal(204);
+  });
+}

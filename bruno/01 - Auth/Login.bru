@@ -1,0 +1,58 @@
+meta {
+  name: Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/login
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{email}}",
+    "password": "{{password}}"
+  }
+}
+
+script:post-response {
+  // Persist the bearer token for all subsequent requests in the run.
+  if (res.getStatus() === 200 && res.getBody() && res.getBody().access_token) {
+    bru.setVar("accessToken", res.getBody().access_token);
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.token_type: eq Bearer
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("returns an access_token", function () {
+    const body = res.getBody();
+    expect(body).to.have.property("access_token");
+    expect(body.access_token).to.be.a("string").and.not.empty;
+  });
+
+  test("token_type is Bearer", function () {
+    expect(res.getBody().token_type).to.equal("Bearer");
+  });
+
+  test("returns the authenticated user", function () {
+    const user = res.getBody().user;
+    expect(user).to.be.an("object");
+    expect(user).to.have.property("id");
+    expect(user).to.have.property("email");
+  });
+}
