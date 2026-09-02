@@ -110,17 +110,18 @@ Entorno de `admin` (`environments/admin.bru`) y de `vendedor` (`environments/ven
 cd bruno
 
 # pruebas para administrador
-npx @usebruno/cli run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin
+npx dotenv-cli -e ../.env -- npx @usebruno/cli run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin
 
 # pruebas para vendedor
-npx @usebruno/cli run "04 - Rol Vendedor" --env vendedor
+npx dotenv-cli -e ../.env -- npx @usebruno/cli run "04 - Rol Vendedor" --env vendedor
 
 # solo una carpeta
-npx @usebruno/cli run "02 - Clientes" --env admin
+npx dotenv-cli -e ../.env -- npx @usebruno/cli run "02 - Clientes" --env admin
 
 # crear reporte
-npx @usebruno/cli run "04 - Rol Vendedor" --env vendedor --reporter-html results.html
+npx dotenv-cli -e ../.env -- npx @usebruno/cli run "04 - Rol Vendedor" --env vendedor --reporter-html results.html
+
 ```
 
-> Cada rol debe ser ejecutado dentro su carpeta con el entorno correspondiente: admin debe ser ejecutad con `--env admin` y la `04 - Rol Vendedor`.
+> Cada rol debe ser ejecutado dentro su carpeta con el entorno correspondiente: vendedor debe ser ejecutado con `--env vendedor` y la `04 - Rol Vendedor`.
 

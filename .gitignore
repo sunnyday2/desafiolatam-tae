@@ -7,9 +7,10 @@ test-results/
 blob-report/
 playwright/.cache/
 
-# Auth session captured by global-setup (may contain tokens)
+# Secretos
 .auth/
-.env/
+.env
+README-copy.md
 
 # OS files
 .DS_Store
