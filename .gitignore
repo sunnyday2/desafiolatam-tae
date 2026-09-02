@@ -9,6 +9,7 @@ playwright/.cache/
 
 # Auth session captured by global-setup (may contain tokens)
 .auth/
+.env/
 
 # OS files
 .DS_Store
