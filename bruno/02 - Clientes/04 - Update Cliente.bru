@@ -1,5 +1,5 @@
 meta {
-  name: 04 - Update Cliente
+  name: 04 - Modificar Cliente
   type: http
   seq: 4
 }
@@ -26,6 +26,7 @@ body:json {
 }
 
 script:pre-request {
+  // Setear la variable de entorno
   bru.setVar("clienteNameUpdated", bru.getVar("clienteName") + " (Actualizado)");
 }
 
@@ -34,16 +35,16 @@ assert {
 }
 
 tests {
-  test("status is 200", function () {
+  test("status=200 (OK)", function () {
     expect(res.getStatus()).to.equal(200);
   });
 
-  test("name reflects the update", function () {
+  test("validar que la respuesta tiene mensaje igual a la variable seteada", function () {
     const c = res.getBody().data;
     expect(c.name).to.equal(bru.getVar("clienteNameUpdated"));
   });
 
-  test("id is unchanged after update", function () {
+  test("validar el id del cleinte actualizado coincide", function () {
     expect(String(res.getBody().data.id)).to.equal(String(bru.getVar("clienteId")));
   });
 }

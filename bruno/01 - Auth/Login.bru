@@ -1,5 +1,5 @@
 meta {
-  name: Login
+  name: Login de usuario
   type: http
   seq: 1
 }
@@ -23,7 +23,7 @@ body:json {
 }
 
 script:post-response {
-  // Persist the bearer token for all subsequent requests in the run.
+  // asignar la variable de token para todas las peticiones
   if (res.getStatus() === 200 && res.getBody() && res.getBody().access_token) {
     bru.setVar("accessToken", res.getBody().access_token);
   }
@@ -39,17 +39,17 @@ tests {
     expect(res.getStatus()).to.equal(200);
   });
 
-  test("returns an access_token", function () {
+  test("obtener token y validar que no este vacio", function () {
     const body = res.getBody();
     expect(body).to.have.property("access_token");
     expect(body.access_token).to.be.a("string").and.not.empty;
   });
 
-  test("token_type is Bearer", function () {
+  test("validar que tipo de token sea Bearer", function () {
     expect(res.getBody().token_type).to.equal("Bearer");
   });
 
-  test("returns the authenticated user", function () {
+  test("retornar propiedades usuario que este autenticado", function () {
     const user = res.getBody().user;
     expect(user).to.be.an("object");
     expect(user).to.have.property("id");

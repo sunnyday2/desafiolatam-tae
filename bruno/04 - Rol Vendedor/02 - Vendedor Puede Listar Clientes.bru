@@ -20,11 +20,11 @@ assert {
 }
 
 tests {
-  test("vendedor can read clientes (clientes.view) - 200", function () {
+  test("vendedor tiene permiso clientes.view=200", function () {
     expect(res.getStatus()).to.equal(200);
   });
 
-  test("response has a data array", function () {
+  test("la respuesta contiene elemento data tipo arreglo", function () {
     expect(res.getBody()).to.have.property("data");
     expect(res.getBody().data).to.be.an("array");
   });

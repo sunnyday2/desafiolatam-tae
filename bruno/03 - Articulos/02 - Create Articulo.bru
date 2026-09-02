@@ -1,5 +1,5 @@
 meta {
-  name: 02 - Create Articulo
+  name: 02 - Crear Articulo
   type: http
   seq: 2
 }
@@ -30,13 +30,15 @@ body:json {
 }
 
 script:pre-request {
+  // Generar data para test que sean los valores unicos para cada ejecución
   const suffix = Date.now().toString().slice(-8);
   bru.setVar("articuloName", "Articulo API Bruno " + suffix);
-  // SKU is numeric with a mask; send digits only.
+  // SKU acepta solo números
   bru.setVar("articuloSku", ("9" + suffix + suffix).slice(0, 12));
 }
 
 script:post-response {
+  // asignar la variable de articuloId para todas las peticiones
   const body = res.getBody();
   if (body && body.data && body.data.id) {
     bru.setVar("articuloId", body.data.id);
@@ -49,26 +51,26 @@ assert {
 }
 
 tests {
-  test("status is 201 Created", function () {
+  test("status=201 (Created)", function () {
     expect(res.getStatus()).to.equal(201);
   });
 
-  test("response wraps the created articulo in data", function () {
+  test("respuesta contiene elemento data y es un objeto", function () {
     expect(res.getBody()).to.have.property("data");
     expect(res.getBody().data).to.be.an("object");
   });
 
-  test("created articulo echoes the sent fields", function () {
+  test("validar que la respuesta de creación del articulo tiene misma data con que fue actualizada", function () {
     const p = res.getBody().data;
     expect(p).to.have.property("id");
     expect(p.name).to.equal(bru.getVar("articuloName"));
     expect(p.is_active).to.equal(true);
-    // line/category come from the environment; compare numerically.
+    // comparamos los numeros de line y category con las variables del  entorno
     expect(Number(p.line)).to.equal(Number(bru.getEnvVar("lineId")));
     expect(Number(p.category)).to.equal(Number(bru.getEnvVar("categoryId")));
   });
 
-  test("line and category are resolved to names", function () {
+  test("validar que propiedades line y category contienen name", function () {
     const p = res.getBody().data;
     expect(p).to.have.property("line_name");
     expect(p).to.have.property("category_name");

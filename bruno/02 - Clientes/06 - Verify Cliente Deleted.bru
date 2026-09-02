@@ -1,5 +1,5 @@
 meta {
-  name: 06 - Verify Cliente Deleted
+  name: 06 - Verificar al Cliente Eliminado
   type: http
   seq: 6
 }
@@ -20,7 +20,7 @@ assert {
 }
 
 tests {
-  test("deleted cliente is no longer found (404)", function () {
+  test("status=404: validar que cliente no fue encontrado", function () {
     expect(res.getStatus()).to.equal(404);
   });
 }

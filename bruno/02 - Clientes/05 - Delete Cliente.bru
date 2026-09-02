@@ -1,5 +1,5 @@
 meta {
-  name: 05 - Delete Cliente
+  name: 05 - Eliminar Cliente
   type: http
   seq: 5
 }
@@ -20,7 +20,7 @@ assert {
 }
 
 tests {
-  test("status is 204 No Content", function () {
+  test("status=204 (No Content): cliente fue eliminado", function () {
     expect(res.getStatus()).to.equal(204);
   });
 }

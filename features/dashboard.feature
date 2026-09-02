@@ -1,39 +1,42 @@
-# language: es
+
 # Reflejado desde la app real IMCOARCA (https://imcoarca.leonardojose.dev/dashboard):
-#   Encabezado "Dashboard" + "Bienvenido al sistema ERP."
 #   Tarjetas:
 #     - "Cotización Dólar (Venta)"  -> monto, "Fuente: DolarApi (oficial)", "Actualizado: <fecha>"
 #     - "Total Saldo Clientes"      -> monto, "Clic para ver detalle por cliente"
 #     - "Total Saldo Proveedores"   -> monto, "Clic para ver detalle por proveedor"
 
 @dashboard
-Característica: Panel principal (Dashboard)
+Feature: Panel principal (Dashboard)
   Como usuario del sistema
   Quiero ver un panel con indicadores clave al iniciar sesión
   Para conocer de un vistazo la cotización del dólar y los saldos de clientes y proveedores
 
-  Antecedentes:
-    Dado que inicié sesión en el sistema
-    Y que estoy en la página "Dashboard"
+  # ---------------------------------------------------------------------------
+  # Establece Given para todos los escenarios
+  # ---------------------------------------------------------------------------
+
+  Background:
+    Given que inicié sesión en el sistema
+    And que estoy en la página "Dashboard"
 
   # ---------------------------------------------------------------------------
   # Visibilidad de los indicadores
   # ---------------------------------------------------------------------------
 
   @smoke
-  Escenario: El dashboard es la página inicial tras iniciar sesión
-    Entonces veo el encabezado "Dashboard"
-    Y veo el mensaje de bienvenida "Bienvenido al sistema ERP."
+  Scenario: El dashboard es la página inicial tras iniciar sesión
+    Then veo el encabezado "Dashboard"
+    And veo el mensaje de bienvenida "Bienvenido al sistema ERP."
 
   @smoke
-  Escenario: Ver las tarjetas de indicadores del dashboard
-    Entonces veo la tarjeta "Cotización Dólar (Venta)"
-    Y veo la tarjeta "Total Saldo Clientes"
-    Y veo la tarjeta "Total Saldo Proveedores"
+  Scenario: Ver las tarjetas de indicadores del dashboard
+    Then veo la tarjeta "Cotización Dólar (Venta)"
+    And veo la tarjeta "Total Saldo Clientes"
+    And veo la tarjeta "Total Saldo Proveedores"
 
   @regression
   Esquema del escenario: Cada tarjeta muestra un valor monetario
-    Entonces la tarjeta "<tarjeta>" muestra un importe con formato de moneda
+    Then la tarjeta "<tarjeta>" muestra un importe con formato de moneda
 
     Ejemplos:
       | tarjeta                   |
@@ -46,29 +49,29 @@ Característica: Panel principal (Dashboard)
   # ---------------------------------------------------------------------------
 
   @regression
-  Escenario: La tarjeta de cotización indica la fuente y la fecha de actualización
-    Cuando observo la tarjeta "Cotización Dólar (Venta)"
-    Entonces muestra la fuente "DolarApi (oficial)"
-    Y muestra la fecha de última actualización
+  Scenario: La tarjeta de cotización indica la fuente y la fecha de actualización
+    When observo la tarjeta "Cotización Dólar (Venta)"
+    Then muestra la fuente "DolarApi (oficial)"
+    And muestra la fecha de última actualización
 
   # ---------------------------------------------------------------------------
   # Saldos de clientes / proveedores
   # ---------------------------------------------------------------------------
 
   @regression
-  Escenario: La tarjeta de saldo de clientes invita a ver el detalle
-    Cuando observo la tarjeta "Total Saldo Clientes"
-    Entonces muestra el texto "Clic para ver detalle por cliente"
+  Scenario: La tarjeta de saldo de clientes invita a ver el detalle
+    When observo la tarjeta "Total Saldo Clientes"
+    Then muestra el texto "Clic para ver detalle por cliente"
 
   @regression
-  Escenario: La tarjeta de saldo de proveedores invita a ver el detalle
-    Cuando observo la tarjeta "Total Saldo Proveedores"
-    Entonces muestra el texto "Clic para ver detalle por proveedor"
+  Scenario: La tarjeta de saldo de proveedores invita a ver el detalle
+    When observo la tarjeta "Total Saldo Proveedores"
+    Then muestra el texto "Clic para ver detalle por proveedor"
 
   @regression
   Esquema del escenario: Abrir el detalle desde una tarjeta de saldo
-    Cuando hago clic en la tarjeta "<tarjeta>"
-    Entonces se muestra el detalle de saldos "<detalle>"
+    When hago clic en la tarjeta "<tarjeta>"
+    Then se muestra el detalle de saldos "<detalle>"
 
     Ejemplos:
       | tarjeta                  | detalle                |
@@ -80,15 +83,15 @@ Característica: Panel principal (Dashboard)
   # ---------------------------------------------------------------------------
 
   @regression
-  Escenario: El saldo total de clientes coincide con el detalle
-    Cuando hago clic en la tarjeta "Total Saldo Clientes"
-    Entonces la suma de los saldos individuales por cliente es igual al "Total Saldo Clientes"
+  Scenario: El saldo total de clientes coincide con el detalle
+    When hago clic en la tarjeta "Total Saldo Clientes"
+    Then la suma de los saldos individuales por cliente es igual al "Total Saldo Clientes"
 
   # ---------------------------------------------------------------------------
   # Sesión
   # ---------------------------------------------------------------------------
 
-  Escenario: Cerrar sesión desde el dashboard
-    Cuando presiono "Cerrar Sesión"
-    Entonces la sesión se cierra
-    Y soy redirigido a la página de inicio de sesión
+  Scenario: Cerrar sesión desde el dashboard
+    When presiono "Cerrar Sesión"
+    Then la sesión se cierra
+    And soy redirigido a la página de inicio de sesión

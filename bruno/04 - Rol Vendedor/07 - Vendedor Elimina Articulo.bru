@@ -20,8 +20,8 @@ assert {
 }
 
 tests {
-  test("vendedor can delete productos (productos.delete) - 204", function () {
-    // Cleans up the articulo created above.
+  test("vendedor tiene permisos productos.delete=204", function () {
+    // eliminar articulo creado en pasos anteriores
     expect(res.getStatus()).to.equal(204);
   });
 }

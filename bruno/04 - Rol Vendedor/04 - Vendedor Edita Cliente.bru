@@ -29,11 +29,11 @@ assert {
 }
 
 tests {
-  test("vendedor can edit clientes (clientes.edit) - 200", function () {
+  test("validar que Vendedor tiene permiso clientes.edit=200", function () {
     expect(res.getStatus()).to.equal(200);
   });
 
-  test("name reflects the update", function () {
+  test("validar que consulta retorno el comentario en el nombre del cliente", function () {
     expect(res.getBody().data.name).to.contain("Editado por Vendedor");
   });
 }

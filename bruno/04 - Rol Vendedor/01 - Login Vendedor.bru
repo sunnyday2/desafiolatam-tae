@@ -23,6 +23,7 @@ body:json {
 }
 
 script:post-response {
+  // asignar la variable de vendedorRoles para todas las peticiones
   const body = res.getBody();
   if (res.getStatus() === 200 && body && body.access_token) {
     bru.setVar("accessToken", body.access_token);
@@ -41,30 +42,29 @@ assert {
 }
 
 tests {
-  test("status is 200", function () {
+  test("status=200 (OK)", function () {
     expect(res.getStatus()).to.equal(200);
   });
 
-  test("authenticates as the Vendedor role", function () {
+  test("autenticar con el rol de Vendedor", function () {
     const roles = res.getBody().user.roles.map(function (r) { return r.name; });
     expect(roles).to.include("Vendedor");
   });
 
-  test("permission set matches the Vendedor role", function () {
+  test("validar que permisos coinciden con el rol de Vendedor", function () {
     const perms = res.getBody().user.roles.reduce(function (acc, r) {
       return acc.concat(r.permissions || []);
     }, []);
-    // Allowed for vendedor:
+    // permisos esperados para Vendedor:
     expect(perms).to.include("clientes.view");
     expect(perms).to.include("clientes.create");
     expect(perms).to.include("clientes.edit");
     expect(perms).to.include("productos.create");
     expect(perms).to.include("facturas.create");
-    // NOT allowed for vendedor:
+    // Acciones no permitidas para Vendedor:
     expect(perms).to.not.include("clientes.delete");
     expect(perms).to.not.include("facturas.edit");
     expect(perms).to.not.include("facturas.delete");
-    // No cobranzas permissions at all.
     const hasCobranzas = perms.some(function (p) { return p.indexOf("cobranzas") === 0; });
     expect(hasCobranzas).to.equal(false);
   });

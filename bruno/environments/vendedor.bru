@@ -1,7 +1,7 @@
 vars {
-  baseUrl: https://back-imcoarca.leonardojose.dev/api
-  email: vendedor@testing.com
-  password: Tae@2026
-  lineId: 37
-  categoryId: 53
+  baseUrl: {{process.env.BASE_URL}}
+  email: {{process.env.VENDEDOR_USER}}
+  password: {{process.env.VENDEDOR_PASS}}
+  lineId: {{process.env.VENDEDOR_LINE_ID}}
+  categoryId: {{process.env.VENDEDOR_CATEGORY_ID}}
 }

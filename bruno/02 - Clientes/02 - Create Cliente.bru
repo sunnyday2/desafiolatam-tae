@@ -1,5 +1,5 @@
 meta {
-  name: 02 - Create Cliente
+  name: 02 - Crear Cliente
   type: http
   seq: 2
 }
@@ -26,7 +26,7 @@ body:json {
 }
 
 script:pre-request {
-  // Generate unique test data for this run.
+  // Generar data para test que sean los valores unicos para cada ejecución
   const suffix = Date.now().toString().slice(-8);
   const digits = String(Math.floor(10000000 + Math.random() * 89999999));
   bru.setVar("clienteName", "Cliente API Bruno " + suffix);
@@ -35,6 +35,7 @@ script:pre-request {
 }
 
 script:post-response {
+  // Setear la variable de entorno
   const body = res.getBody();
   if (body && body.data && body.data.id) {
     bru.setVar("clienteId", body.data.id);
@@ -47,16 +48,16 @@ assert {
 }
 
 tests {
-  test("status is 201 Created", function () {
+  test("status=201 (Created)", function () {
     expect(res.getStatus()).to.equal(201);
   });
 
-  test("response wraps the created cliente in data", function () {
+  test("validar que la respuesta contiene campo data", function () {
     expect(res.getBody()).to.have.property("data");
     expect(res.getBody().data).to.be.an("object");
   });
 
-  test("created cliente echoes the sent fields", function () {
+  test("validar que la respuesta de creación del cliente tiene misma data", function () {
     const c = res.getBody().data;
     expect(c).to.have.property("id");
     expect(c.name).to.equal(bru.getVar("clienteName"));
@@ -64,7 +65,7 @@ tests {
     expect(c.email).to.equal(bru.getVar("clienteEmail"));
   });
 
-  test("server assigns a customer_code", function () {
+  test("validar que servidor asignó customer_code", function () {
     expect(res.getBody().data).to.have.property("customer_code");
   });
 }

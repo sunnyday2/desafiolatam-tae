@@ -1,5 +1,5 @@
 meta {
-  name: 01 - List Articulos
+  name: 01 - Listar Articulos
   type: http
   seq: 1
 }
@@ -20,17 +20,17 @@ assert {
 }
 
 tests {
-  test("status is 200", function () {
+  test("status=200 (OK)", function () {
     expect(res.getStatus()).to.equal(200);
   });
 
-  test("response has a data array", function () {
+  test("respuesta contiene elemento data y es un arreglo", function () {
     const body = res.getBody();
     expect(body).to.have.property("data");
     expect(body.data).to.be.an("array");
   });
 
-  test("each articulo has the expected structure", function () {
+  test("cada atrtículo tiene estructura esperada", function () {
     const data = res.getBody().data;
     if (data.length > 0) {
       const p = data[0];

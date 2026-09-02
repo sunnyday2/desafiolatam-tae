@@ -30,12 +30,14 @@ body:json {
 }
 
 script:pre-request {
+  // Generar data para test que sean los valores unicos para cada ejecución
   const suffix = Date.now().toString().slice(-8);
   bru.setVar("vArticuloName", "Articulo Vendedor " + suffix);
   bru.setVar("vArticuloSku", ("7" + suffix + suffix).slice(0, 12));
 }
 
 script:post-response {
+  // asignar la variable de vArticuloId para todas las peticiones
   const body = res.getBody();
   if (body && body.data && body.data.id) {
     bru.setVar("vArticuloId", body.data.id);
@@ -55,11 +57,11 @@ assert {
 }
 
 tests {
-  test("vendedor can create productos (productos.create) - 201", function () {
+  test("vendedor tiene permisiso productos.create=201", function () {
     expect(res.getStatus()).to.equal(201);
   });
 
-  test("created articulo is returned in data with resolved names", function () {
+  test("validar que la respuesa con la información del articulo contiene ciertos campos", function () {
     const p = res.getBody().data;
     expect(p).to.have.property("id");
     expect(p.name).to.equal(bru.getVar("vArticuloName"));

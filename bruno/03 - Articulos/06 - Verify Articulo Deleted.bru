@@ -20,7 +20,7 @@ assert {
 }
 
 tests {
-  test("deleted articulo is no longer found (404)", function () {
+  test("status=404 (validar que artículo no fue encontrado)", function () {
     expect(res.getStatus()).to.equal(404);
   });
 }

@@ -1,5 +1,5 @@
 meta {
-  name: 05 - Delete Articulo
+  name: 05 - Eliminar Articulo
   type: http
   seq: 5
 }
@@ -20,7 +20,7 @@ assert {
 }
 
 tests {
-  test("status is 204 No Content", function () {
+  test("status=204 (No Content): artículo fue eliminado", function () {
     expect(res.getStatus()).to.equal(204);
   });
 }

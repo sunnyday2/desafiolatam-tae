@@ -32,7 +32,7 @@ tests/desafiolatam-tae/
 │       └── vendedor-rol.spec.js
 ├── features/                     # BDD specs in Gherkin (.feature, español)
 │   ├── pedidos-de-venta.feature  # Pedidos de Venta y flujo de Autorización
-│   └── dashboard.feature         # Panel principal (indicadores)
+│   └── dashboard.feature         # anel principal (indicadores)
 ├── bruno/                        # Bruno API test collection (see bruno/README.md)
 └── docs/
     └── screenshots/              # Reference screenshots captured during discovery

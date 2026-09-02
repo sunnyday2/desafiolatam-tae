@@ -25,6 +25,7 @@ body:json {
 }
 
 script:pre-request {
+  // Generar data para test que sean los valores unicos para cada ejecución
   const suffix = Date.now().toString().slice(-8);
   const digits = String(Math.floor(10000000 + Math.random() * 89999999));
   bru.setVar("vClienteName", "Cliente Vendedor " + suffix);
@@ -32,6 +33,7 @@ script:pre-request {
 }
 
 script:post-response {
+  // asignar la variable de vClienteId para todas las peticiones
   const body = res.getBody();
   if (body && body.data && body.data.id) {
     bru.setVar("vClienteId", body.data.id);
@@ -44,11 +46,11 @@ assert {
 }
 
 tests {
-  test("vendedor can create clientes (clientes.create) - 201", function () {
+  test("validar que Vendedor tiene permisos clientes.create=201", function () {
     expect(res.getStatus()).to.equal(201);
   });
 
-  test("created cliente is returned in data", function () {
+  test("validar que consulta retorno el cliente que creamos en paso 2", function () {
     const c = res.getBody().data;
     expect(c).to.have.property("id");
     expect(c.name).to.equal(bru.getVar("vClienteName"));

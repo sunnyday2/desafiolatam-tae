@@ -32,9 +32,8 @@ assert {
 }
 
 tests {
-  test("API allows delete despite vendedor lacking clientes.delete (observed: 204)", function () {
-    // NOTE: This asserts the ACTUAL backend behavior. Role enforcement is
-    // frontend-only; the API does not block the vendedor from deleting.
+  test("API permite eliminación por Vendedor a pesar de faltar permiso clientes.delete=204", function () {
+    // ACTUALMENTE backend controla permiso solo en frontend; la API no lo valida
     expect(res.getStatus()).to.equal(204);
   });
 }

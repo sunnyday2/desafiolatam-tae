@@ -1,5 +1,5 @@
 meta {
-  name: 04 - Update Articulo
+  name: 04 - Modificar Articulo
   type: http
   seq: 4
 }
@@ -30,6 +30,7 @@ body:json {
 }
 
 script:pre-request {
+// Setear la variable de entorno
   bru.setVar("articuloNameUpdated", bru.getVar("articuloName") + " (Actualizado)");
 }
 
@@ -38,20 +39,20 @@ assert {
 }
 
 tests {
-  test("status is 200", function () {
+  test("status=200 (OK)", function () {
     expect(res.getStatus()).to.equal(200);
   });
 
-  test("name reflects the update", function () {
+  test("validar que la respuesta tiene mensaje igual a la variable seteada", function () {
     expect(res.getBody().data.name).to.equal(bru.getVar("articuloNameUpdated"));
   });
 
-  test("sale_price reflects the update", function () {
-    // API returns prices as strings (e.g. "1999.00"); compare numerically.
+  test("validar que sale_price fue actualizado", function () {
+    // convertir y comparar numeros.
     expect(parseFloat(res.getBody().data.sale_price)).to.equal(1999);
   });
 
-  test("id is unchanged after update", function () {
+  test("validar que el id del artículo es el mismo con cual fue actualizado", function () {
     expect(String(res.getBody().data.id)).to.equal(String(bru.getVar("articuloId")));
   });
 }

@@ -20,11 +20,11 @@ assert {
 }
 
 tests {
-  test("status is 200", function () {
+  test("status=200 (OK)", function () {
     expect(res.getStatus()).to.equal(200);
   });
 
-  test("returns the same cliente that was created", function () {
+  test("validar que consulta retorno el cliente que creamos en paso 2", function () {
     const c = res.getBody().data;
     expect(c).to.be.an("object");
     expect(String(c.id)).to.equal(String(bru.getVar("clienteId")));
@@ -32,7 +32,7 @@ tests {
     expect(c.cuit).to.equal(bru.getVar("clienteCuit"));
   });
 
-  test("payload exposes the core cliente fields", function () {
+  test("validar que la respuesa con la información del cliente contiene ciertos campos", function () {
     const c = res.getBody().data;
     ["id", "name", "cuit", "email", "customer_code", "tax"].forEach(function (k) {
       expect(c).to.have.property(k);
