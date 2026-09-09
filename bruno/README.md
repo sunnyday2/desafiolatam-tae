@@ -15,29 +15,29 @@ Las peticiones estan **logicamente ordenadas** para ser ejecutadas:
   └─ Login                     POST /login          -> 200, guarda el {{accessToken}}
 
 02 - Clientes
-  ├─ 01 - List Clientes        GET    /clients      -> 200, { data: [...] }
-  ├─ 02 - Create Cliente       POST   /clients      -> 201, { data: {...} }, guarda el id
-  ├─ 03 - Get Cliente by ID    GET    /clients/{id} -> 200, retorna los valores creados
-  ├─ 04 - Update Cliente       PUT    /clients/{id} -> 200, actualiza name
-  ├─ 05 - Delete Cliente       DELETE /clients/{id} -> 204
-  └─ 06 - Verify Cliente Deleted GET  /clients/{id} -> 404
+  ├─ 01 - List Clientes          GET    /clients      -> 200, { data: [...] }
+  ├─ 02 - Create Cliente         POST   /clients      -> 201, { data: {...} }, guarda el id
+  ├─ 03 - Get Cliente by ID      GET    /clients/{id} -> 200, retorna los valores creados
+  ├─ 04 - Update Cliente         PUT    /clients/{id} -> 200, actualiza name
+  ├─ 05 - Delete Cliente         DELETE /clients/{id} -> 204
+  └─ 06 - Verify Cliente Deleted GET    /clients/{id} -> 404
 
 03 - Articulos
-  ├─ 01 - List Articulos       GET    /products      -> 200, { data: [...] }
-  ├─ 02 - Create Articulo      POST   /products      -> 201, { data: {...} }, guarda el id
-  ├─ 03 - Get Articulo by ID   GET    /products/{id} -> 200, retorna los valores creados
-  ├─ 04 - Update Articulo      PUT    /products/{id} -> 200, actualiza price/name
-  ├─ 05 - Delete Articulo      DELETE /products/{id} -> 204
-  └─ 06 - Verify Articulo Deleted GET /products/{id} -> 404
+  ├─ 01 - List Articulos          GET    /products      -> 200, { data: [...] }
+  ├─ 02 - Create Articulo         POST   /products      -> 201, { data: {...} }, guarda el id
+  ├─ 03 - Get Articulo by ID      GET    /products/{id} -> 200, retorna los valores creados
+  ├─ 04 - Update Articulo         PUT    /products/{id} -> 200, actualiza price/name
+  ├─ 05 - Delete Articulo         DELETE /products/{id} -> 204
+  └─ 06 - Verify Articulo Deleted GET    /products/{id} -> 404
 
 04 - Rol Vendedor (ejecuta con --env vendedor)
-  ├─ 01 - Login Vendedor           POST /login  -> 200, asserts para rol de "Vendedor" + permisos
-  ├─ 02 - Vendedor Puede Listar Clientes  GET  /clients         -> 200
-  ├─ 03 - Vendedor Crea Cliente           POST /clients         -> 201, guarda el id
-  ├─ 04 - Vendedor Edita Cliente          PUT  /clients/{id}    -> 200
-  ├─ 05 - Vendedor Elimina Cliente        DELETE /clients/{id}  -> 204 
-  ├─ 06 - Vendedor Crea Articulo          POST /products        -> 201, guarda el id
-  └─ 07 - Vendedor Elimina Articulo       DELETE /products/{id} -> 204
+  ├─ 01 - Login Vendedor                  POST    /login         -> 200, asserts para rol de "Vendedor" + permisos
+  ├─ 02 - Vendedor Puede Listar Clientes  GET     /clients       -> 200
+  ├─ 03 - Vendedor Crea Cliente           POST    /clients       -> 201, guarda el id
+  ├─ 04 - Vendedor Edita Cliente          PUT     /clients/{id}  -> 200
+  ├─ 05 - Vendedor Elimina Cliente        DELETE  /clients/{id}  -> 204 
+  ├─ 06 - Vendedor Crea Articulo          POST    /products      -> 201, guarda el id
+  └─ 07 - Vendedor Elimina Articulo       DELETE  /products/{id} -> 204
 ```
 
 ## Pasos para agregar los Secrets en GitHub
@@ -113,7 +113,7 @@ cd bruno
 bru run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin
 
 # pruebas para vendedor
-bru run "01 - Auth" "02 - Clientes" "03 - Articulos" --env vendedor
+bru run "04 - Rol Vendedor" --env vendedor
 
 # solo una carpeta
 bru run "02 - Clientes" --env admin
