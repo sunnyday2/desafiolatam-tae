@@ -105,6 +105,9 @@ IMCOARCA_ALLOW_WRITES=0
 ## Hooks
 
 Al indicar `IMCOARCA_ALLOW_WRITES=1` permite hacer pruebas de creacion/actualizacion y eliminacion.
+```bash
+IMCOARCA_ALLOW_WRITES=1 npx playwright test
+```
 
 ## Ejecución suit de prueba
 
