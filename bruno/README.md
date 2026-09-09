@@ -1,6 +1,6 @@
 # IMCOARCA API — Bruno Collection
 
-Tests de backend API CRUD con [Bruno](https://www.usebruno.com/) para the IMCOARCA ERP.
+Tests de backend API CRUD con [Bruno](https://www.usebruno.com/) para IMCOARCA ERP.
 URL de Backend: `http://localhost/api`
 
 ## Que cubren las pruebas
