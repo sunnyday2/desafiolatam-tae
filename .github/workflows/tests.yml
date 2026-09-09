@@ -47,24 +47,28 @@ jobs:
           echo "::add-mask::$VENDEDOR_USER"
           echo "::add-mask::$VENDEDOR_PASS"
 
-          # 3. Exportar variables de entorno para que el proceso hijo (Bruno) las lea
-          export ADMIN_USER
-          export ADMIN_PASS
-          export BACKEND_BASE_URL
-          export ADMIN_LINE_ID
-          export ADMIN_CATEGORY_ID
-          export VENDEDOR_USER
-          export VENDEDOR_PASS
-          export VENDEDOR_LINE_ID
-          export VENDEDOR_CATEGORY_ID
-
-          # 4. Eliminar el secreto en crudo de la memoria local
+          # 3. Eliminar el secreto en crudo de la memoria local
           unset RAW_ENV_ADMIN
+
+          # 4. Crear el archivo .env en la raíz de la colección Bruno
+          # Bruno CLI carga process.env desde este archivo, no desde el shell.
+          # trap garantiza la eliminación del archivo incluso si los tests fallan.
+          trap 'rm -f bruno/.env' EXIT
+          printf 'BACKEND_BASE_URL=%s\nADMIN_USER=%s\nADMIN_PASS=%s\nADMIN_LINE_ID=%s\nADMIN_CATEGORY_ID=%s\nVENDEDOR_USER=%s\nVENDEDOR_PASS=%s\nVENDEDOR_LINE_ID=%s\nVENDEDOR_CATEGORY_ID=%s\n' \
+            "$BACKEND_BASE_URL" "$ADMIN_USER" "$ADMIN_PASS" \
+            "$ADMIN_LINE_ID" "$ADMIN_CATEGORY_ID" \
+            "$VENDEDOR_USER" "$VENDEDOR_PASS" \
+            "$VENDEDOR_LINE_ID" "$VENDEDOR_CATEGORY_ID" \
+            > bruno/.env
 
           # 5. Ejecutar las colecciones
           cd bruno
-          bru run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin --env-var BACKEND_BASE_URL="$BACKEND_BASE_URL"
-          bru run "04 - Rol Vendedor" --env vendedor --env-var BACKEND_BASE_URL="$BACKEND_BASE_URL"
+          bru run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin
+          bru run "04 - Rol Vendedor" --env vendedor
+
+          # 6. Eliminar el archivo .env del disco al terminar
+          cd ..
+          rm -f bruno/.env
 
 
   playwright-tests:
