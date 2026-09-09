@@ -29,24 +29,29 @@ jobs:
         env:
           RAW_ENV_ADMIN: ${{ secrets.ENV_ADMIN }}
         run: |
-          # 1. Extraer y enmascarar inmediatamente las variables para que GitHub Actions las censure en todos los logs
+          # 1. Extraer todas las variables requeridas desde el JSON de secretos
           ADMIN_USER=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_USER // empty')
           ADMIN_PASS=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_PASS // empty')
+          BACKEND_BASE_URL=$(echo "$RAW_ENV_ADMIN" | jq -r '.BACKEND_BASE_URL // empty')
           
+          # 2. Aplicar enmascaramiento estricto
           echo "::add-mask::$ADMIN_USER"
           echo "::add-mask::$ADMIN_PASS"
+          echo "::add-mask::$BACKEND_BASE_URL"
           
-          # Exportar para los siguientes comandos dentro del mismo step
+          # 3. Exportar variables de entorno para que el proceso hijo (Bruno) las lea
           export ADMIN_USER
           export ADMIN_PASS
+          export BACKEND_BASE_URL
           
-          # 2. Desarmar la variable JSON original para evitar filtraciones accidentales
+          # 4. Eliminar el secreto en crudo de la memoria local
           unset RAW_ENV_ADMIN
           
-          # 3. Navegar al directorio de la colección y ejecutar Bruno
+          # 5. Ejecutar la colección indicando las variables si tu entorno no las mapea automáticas
           cd bruno
-          bru run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin
-          bru run "04 - Rol Vendedor" --env vendedor
+          bru run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin --env-var BACKEND_BASE_URL="$BACKEND_BASE_URL"
+          bru run "04 - Rol Vendedor" --env vendedor --env-var BACKEND_BASE_URL="$BACKEND_BASE_URL"
+
 
   playwright-tests:
     name: Playwright frontend tests
@@ -72,13 +77,25 @@ jobs:
         env:
           RAW_ENV_ADMIN: ${{ secrets.ENV_ADMIN }}
         run: |
-          # Extraer y aplicar enmascaramiento estricto
+          # 1. Extraer todas las variables requeridas por Playwright y global-setup.js
           FRONTEND_BASE_URL=$(echo "$RAW_ENV_ADMIN" | jq -r '.FRONTEND_BASE_URL // empty')
-          echo "::add-mask::$FRONTEND_BASE_URL"
-          export FRONTEND_BASE_URL
+          ADMIN_USER=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_USER // empty')
+          ADMIN_PASS=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_PASS // empty')
           
+          # 2. Aplicar enmascaramiento estricto
+          echo "::add-mask::$FRONTEND_BASE_URL"
+          echo "::add-mask::$ADMIN_USER"
+          echo "::add-mask::$ADMIN_PASS"
+          
+          # 3. Exportar variables para que el proceso de Node/Playwright las lea
+          export FRONTEND_BASE_URL
+          export ADMIN_USER
+          export ADMIN_PASS
+          
+          # 4. Eliminar el secreto en crudo
           unset RAW_ENV_ADMIN
           
+          # 5. Ejecutar los tests
           IMCOARCA_ALLOW_WRITES=1 npx playwright test
 
 
