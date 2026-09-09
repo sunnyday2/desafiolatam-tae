@@ -24,17 +24,22 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
-      # MANTIENES ESTO PARA PLAYWRIGHT
       - name: Crear .env desde los GitHub Secrets
-        working-directory: ${{ github.workspace }}
+        env:
+          FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
+          ADMIN_USER: ${{ secrets.ADMIN_USER }}
+          ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
+          VENDEDOR_USER: ${{ secrets.VENDEDOR_USER }}
+          VENDEDOR_PASS: ${{ secrets.VENDEDOR_PASS }}
         run: |
-            cat > .env <<EOF
-            BASE_URL=${{ secrets.BASE_URL || 'https://admin.leonardojose.dev' }}
-            ADMIN_USER=${{ secrets.ADMIN_USER }}
-            ADMIN_PASS=${{ secrets.ADMIN_PASS }}
-            VENDEDOR_USER=${{ secrets.VENDEDOR_USER }}
-            VENDEDOR_PASS=${{ secrets.VENDEDOR_PASS }}
-            EOF
+          cat << EOF > .env
+          FRONTEND_BASE_URL=${FRONTEND_BASE_URL}
+          ADMIN_USER=${ADMIN_USER}
+          ADMIN_PASS=${ADMIN_PASS}
+          VENDEDOR_USER=${VENDEDOR_USER}
+          VENDEDOR_PASS=${VENDEDOR_PASS}
+          IMCOARCA_ALLOW_WRITES=0
+          EOF
 
       - name: Run Playwright tests
         run: npx playwright test
@@ -54,7 +59,7 @@ jobs:
     timeout-minutes: 15
     # VARIABLES GLOBALES DEL JOB (Inyectadas directamente a process.env)
     env:
-      BASE_URL: ${{ secrets.BASE_URL }}
+      BASE_URL: ${{ secrets.BACKEND_BASE_URL }}
       ADMIN_USER: ${{ secrets.ADMIN_USER }}
       ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
       ADMIN_LINE_ID: ${{ secrets.ADMIN_LINE_ID }}

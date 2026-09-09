@@ -48,7 +48,7 @@ Las peticiones estan **logicamente ordenadas** para ser ejecutadas:
   - Secret: `ENV_ADMIN`
 ```json  
 {
-  "BASE_URL": "http://localhost/api",
+  "BACKEND_BASE_URL": "http://localhost/api",
   "ADMIN_USER": "",
   "ADMIN_PASS": "",
   "ADMIN_LINE_ID": "",
@@ -58,7 +58,7 @@ Las peticiones estan **logicamente ordenadas** para ser ejecutadas:
   - Secret: `ENV_VENDEDOR`
 ```json  
 {
-  "BASE_URL": "http://localhost/api",
+  "BACKEND_BASE_URL": "http://localhost/api",
   "VENDEDOR_USER": "",
   "VENDEDOR_PASS": "",
   "VENDEDOR_LINE_ID": "",

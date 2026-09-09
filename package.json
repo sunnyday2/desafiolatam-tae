@@ -12,7 +12,10 @@
     "codegen": "playwright codegen https://imcoarca.leonardojose.dev/"
   },
   "devDependencies": {
-    "@playwright/test": "1.45.3",
+    "@playwright/test": "^1.62.1",
     "dotenv": "^16.4.5"
+  },
+  "allowScripts": {
+    "fsevents@2.3.2": true
   }
 }

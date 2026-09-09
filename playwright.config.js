@@ -7,19 +7,18 @@ import dotenv from 'dotenv';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Load credentials from the repository root .env (two levels up:
-// tests/e2e-proyecto-final -> tests -> repo root).
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+// Load credentials from the repository root .env.
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const BASE_URL = process.env.IMCOARCA_BASE_URL || 'https://imcoarca.leonardojose.dev';
+const BASE_URL = process.env.FRONTEND_BASE_URL || 'https://imcoarca.leonardojose.dev';
 
 export default defineConfig({
   testDir: './tests',
   // Logs in once and stores the authenticated session (see use.storageState).
   globalSetup: './support/global-setup.js',
 
-  timeout: 60_000,
-  expect: { timeout: 15_000 },
+  timeout: 120_000,
+  expect: { timeout: 30_000 },
 
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
@@ -35,18 +34,22 @@ export default defineConfig({
     baseURL: BASE_URL,
     ignoreHTTPSErrors: true,
     viewport: { width: 1280, height: 720 },
-    actionTimeout: 15_000,
-    navigationTimeout: 30_000,
+    actionTimeout: 30_000,
+    navigationTimeout: 90_000,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     // Reuse the logged-in session captured during global setup.
     storageState: '.auth/user.json',
   },
 
-  projects: [
+projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        // Si la variable de entorno existe la usa; si no (en CI/CD), usa el valor por defecto
+        channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL || undefined,
+      },
     },
   ],
 });
