@@ -109,18 +109,20 @@ jobs:
           echo "::add-mask::$VENDEDOR_USER"
           echo "::add-mask::$VENDEDOR_PASS"
 
-          # 3. Exportar variables para que el proceso de Node/Playwright las lea
-          export FRONTEND_BASE_URL
-          export ADMIN_USER
-          export ADMIN_PASS
-          export VENDEDOR_USER
-          export VENDEDOR_PASS
-
-          # 4. Eliminar el secreto en crudo
+          # 3. Eliminar el secreto en crudo
           unset RAW_ENV_ADMIN
 
+          # 4. Crear el archivo .env en la raíz del proyecto
+          # playwright.config.js lo carga con dotenv.config(), igual que en local.
+          # trap garantiza la eliminación incluso si los tests fallan.
+          trap 'rm -f .env' EXIT
+          printf 'FRONTEND_BASE_URL=%s\nADMIN_USER=%s\nADMIN_PASS=%s\nVENDEDOR_USER=%s\nVENDEDOR_PASS=%s\nIMCOARCA_ALLOW_WRITES=1\n' \
+            "$FRONTEND_BASE_URL" "$ADMIN_USER" "$ADMIN_PASS" \
+            "$VENDEDOR_USER" "$VENDEDOR_PASS" \
+            > .env
+
           # 5. Ejecutar los tests
-          IMCOARCA_ALLOW_WRITES=1 npx playwright test
+          npx playwright test
 
 
       - name: Upload Playwright report
