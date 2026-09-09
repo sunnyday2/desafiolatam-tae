@@ -33,21 +33,35 @@ jobs:
           ADMIN_USER=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_USER // empty')
           ADMIN_PASS=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_PASS // empty')
           BACKEND_BASE_URL=$(echo "$RAW_ENV_ADMIN" | jq -r '.BACKEND_BASE_URL // empty')
-          
+          ADMIN_LINE_ID=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_LINE_ID // empty')
+          ADMIN_CATEGORY_ID=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_CATEGORY_ID // empty')
+          VENDEDOR_USER=$(echo "$RAW_ENV_ADMIN" | jq -r '.VENDEDOR_USER // empty')
+          VENDEDOR_PASS=$(echo "$RAW_ENV_ADMIN" | jq -r '.VENDEDOR_PASS // empty')
+          VENDEDOR_LINE_ID=$(echo "$RAW_ENV_ADMIN" | jq -r '.VENDEDOR_LINE_ID // empty')
+          VENDEDOR_CATEGORY_ID=$(echo "$RAW_ENV_ADMIN" | jq -r '.VENDEDOR_CATEGORY_ID // empty')
+
           # 2. Aplicar enmascaramiento estricto
           echo "::add-mask::$ADMIN_USER"
           echo "::add-mask::$ADMIN_PASS"
           echo "::add-mask::$BACKEND_BASE_URL"
-          
+          echo "::add-mask::$VENDEDOR_USER"
+          echo "::add-mask::$VENDEDOR_PASS"
+
           # 3. Exportar variables de entorno para que el proceso hijo (Bruno) las lea
           export ADMIN_USER
           export ADMIN_PASS
           export BACKEND_BASE_URL
-          
+          export ADMIN_LINE_ID
+          export ADMIN_CATEGORY_ID
+          export VENDEDOR_USER
+          export VENDEDOR_PASS
+          export VENDEDOR_LINE_ID
+          export VENDEDOR_CATEGORY_ID
+
           # 4. Eliminar el secreto en crudo de la memoria local
           unset RAW_ENV_ADMIN
-          
-          # 5. Ejecutar la colección indicando las variables si tu entorno no las mapea automáticas
+
+          # 5. Ejecutar las colecciones
           cd bruno
           bru run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin --env-var BACKEND_BASE_URL="$BACKEND_BASE_URL"
           bru run "04 - Rol Vendedor" --env vendedor --env-var BACKEND_BASE_URL="$BACKEND_BASE_URL"
@@ -81,20 +95,26 @@ jobs:
           FRONTEND_BASE_URL=$(echo "$RAW_ENV_ADMIN" | jq -r '.FRONTEND_BASE_URL // empty')
           ADMIN_USER=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_USER // empty')
           ADMIN_PASS=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_PASS // empty')
-          
+          VENDEDOR_USER=$(echo "$RAW_ENV_ADMIN" | jq -r '.VENDEDOR_USER // empty')
+          VENDEDOR_PASS=$(echo "$RAW_ENV_ADMIN" | jq -r '.VENDEDOR_PASS // empty')
+
           # 2. Aplicar enmascaramiento estricto
           echo "::add-mask::$FRONTEND_BASE_URL"
           echo "::add-mask::$ADMIN_USER"
           echo "::add-mask::$ADMIN_PASS"
-          
+          echo "::add-mask::$VENDEDOR_USER"
+          echo "::add-mask::$VENDEDOR_PASS"
+
           # 3. Exportar variables para que el proceso de Node/Playwright las lea
           export FRONTEND_BASE_URL
           export ADMIN_USER
           export ADMIN_PASS
-          
+          export VENDEDOR_USER
+          export VENDEDOR_PASS
+
           # 4. Eliminar el secreto en crudo
           unset RAW_ENV_ADMIN
-          
+
           # 5. Ejecutar los tests
           IMCOARCA_ALLOW_WRITES=1 npx playwright test
 
