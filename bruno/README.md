@@ -32,12 +32,12 @@ Las peticiones estan **logicamente ordenadas** para ser ejecutadas:
 
 04 - Rol Vendedor (ejecuta con --env vendedor)
   ├─ 01 - Login Vendedor           POST /login  -> 200, asserts para rol de "Vendedor" + permisos
-  ├─ 02 - Vendedor Puede Listar Clientes  GET  /clients       -> 200
-  ├─ 03 - Vendedor Crea Cliente           POST /clients       -> 201, guarda el id
-  ├─ 04 - Vendedor Edita Cliente          PUT  /clients/{id}  -> 200
-  ├─ 05 - Vendedor Elimina Cliente        DELETE /clients/{id}-> 204 
-  ├─ 06 - Vendedor Crea Articulo          POST /products      -> 201, guarda el id
-  └─ 07 - Vendedor Elimina Articulo       DELETE /products/{id}-> 204
+  ├─ 02 - Vendedor Puede Listar Clientes  GET  /clients         -> 200
+  ├─ 03 - Vendedor Crea Cliente           POST /clients         -> 201, guarda el id
+  ├─ 04 - Vendedor Edita Cliente          PUT  /clients/{id}    -> 200
+  ├─ 05 - Vendedor Elimina Cliente        DELETE /clients/{id}  -> 204 
+  ├─ 06 - Vendedor Crea Articulo          POST /products        -> 201, guarda el id
+  └─ 07 - Vendedor Elimina Articulo       DELETE /products/{id} -> 204
 ```
 
 ## Pasos para agregar los Secrets en GitHub
@@ -110,16 +110,16 @@ Entorno de `admin` (`environments/admin.bru`) y de `vendedor` (`environments/ven
 cd bruno
 
 # pruebas para administrador
-npx dotenv-cli -e ../.env -- npx @usebruno/cli run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin
+bru run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin
 
 # pruebas para vendedor
-npx dotenv-cli -e ../.env -- npx @usebruno/cli run "04 - Rol Vendedor" --env vendedor
+bru run "01 - Auth" "02 - Clientes" "03 - Articulos" --env vendedor
 
 # solo una carpeta
-npx dotenv-cli -e ../.env -- npx @usebruno/cli run "02 - Clientes" --env admin
+bru run "02 - Clientes" --env admin
 
 # crear reporte
-npx dotenv-cli -e ../.env -- npx @usebruno/cli run "04 - Rol Vendedor" --env vendedor --reporter-html results.html
+bru run "04 - Rol Vendedor" --env vendedor --reporter-html results.html
 
 ```
 
