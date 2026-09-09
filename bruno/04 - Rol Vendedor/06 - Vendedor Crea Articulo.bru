@@ -1,0 +1,71 @@
+meta {
+  name: 06 - Vendedor Crea Articulo
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/products
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "{{vArticuloName}}",
+    "sku": "{{vArticuloSku}}",
+    "line": {{lineId}},
+    "category": {{categoryId}},
+    "is_active": true,
+    "sale_price": 1500,
+    "cost_price": 800,
+    "stock_quantity": 5
+  }
+}
+
+script:pre-request {
+  // Generar data para test que sean los valores unicos para cada ejecución
+  const suffix = Date.now().toString().slice(-8);
+  bru.setVar("vArticuloName", "Articulo Vendedor " + suffix);
+  bru.setVar("vArticuloSku", ("7" + suffix + suffix).slice(0, 12));
+}
+
+script:post-response {
+  // asignar la variable de vArticuloId para todas las peticiones
+  const body = res.getBody();
+  if (body && body.data && body.data.id) {
+    bru.setVar("vArticuloId", body.data.id);
+  }
+}
+
+docs {
+  # Nota
+
+  `sale_price` es obligatorio: si se omite, el backend responde `500`
+  ("Field 'sale_price' doesn't have a default value").
+}
+
+assert {
+  res.status: eq 201
+  res.body.data.id: isDefined
+}
+
+tests {
+  test("vendedor tiene permisiso productos.create=201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("validar que la respuesa con la información del articulo contiene ciertos campos", function () {
+    const p = res.getBody().data;
+    expect(p).to.have.property("id");
+    expect(p.name).to.equal(bru.getVar("vArticuloName"));
+    expect(p).to.have.property("line_name");
+    expect(p).to.have.property("category_name");
+  });
+}

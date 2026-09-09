@@ -1,0 +1,58 @@
+meta {
+  name: 03 - Vendedor Crea Cliente
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/clients
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "{{vClienteName}}",
+    "cuit": "{{vClienteCuit}}",
+    "tax": "I"
+  }
+}
+
+script:pre-request {
+  // Generar data para test que sean los valores unicos para cada ejecución
+  const suffix = Date.now().toString().slice(-8);
+  const digits = String(Math.floor(10000000 + Math.random() * 89999999));
+  bru.setVar("vClienteName", "Cliente Vendedor " + suffix);
+  bru.setVar("vClienteCuit", "30-" + digits + "-9");
+}
+
+script:post-response {
+  // asignar la variable de vClienteId para todas las peticiones
+  const body = res.getBody();
+  if (body && body.data && body.data.id) {
+    bru.setVar("vClienteId", body.data.id);
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.data.id: isDefined
+}
+
+tests {
+  test("validar que Vendedor tiene permisos clientes.create=201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("validar que consulta retorno el cliente que creamos en paso 2", function () {
+    const c = res.getBody().data;
+    expect(c).to.have.property("id");
+    expect(c.name).to.equal(bru.getVar("vClienteName"));
+  });
+}

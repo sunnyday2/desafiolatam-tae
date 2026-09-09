@@ -1,0 +1,26 @@
+meta {
+  name: 05 - Eliminar Articulo
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/products/{{articuloId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+assert {
+  res.status: eq 204
+}
+
+tests {
+  test("status=204 (No Content): artículo fue eliminado", function () {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

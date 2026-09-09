@@ -1,0 +1,41 @@
+meta {
+  name: 03 - Get Cliente by ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/clients/{{clienteId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("status=200 (OK)", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("validar que consulta retorno el cliente que creamos en paso 2", function () {
+    const c = res.getBody().data;
+    expect(c).to.be.an("object");
+    expect(String(c.id)).to.equal(String(bru.getVar("clienteId")));
+    expect(c.name).to.equal(bru.getVar("clienteName"));
+    expect(c.cuit).to.equal(bru.getVar("clienteCuit"));
+  });
+
+  test("validar que la respuesa con la información del cliente contiene ciertos campos", function () {
+    const c = res.getBody().data;
+    ["id", "name", "cuit", "email", "customer_code", "tax"].forEach(function (k) {
+      expect(c).to.have.property(k);
+    });
+  });
+}

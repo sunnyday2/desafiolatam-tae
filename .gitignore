@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Playwright output
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# Secretos
+.auth/
+.env
+README-copy.md
+
+# OS files
+.DS_Store
+
+# Note: docs/screenshots/*.png are intentionally NOT ignored (kept per request)

@@ -1,0 +1,41 @@
+meta {
+  name: 03 - Get Articulo por el ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/products/{{articuloId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("status=200 (OK)", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("validar que consulta retorno el articulo que creamos en paso 2", function () {
+    const p = res.getBody().data;
+    expect(p).to.be.an("object");
+    expect(String(p.id)).to.equal(String(bru.getVar("articuloId")));
+    expect(p.name).to.equal(bru.getVar("articuloName"));
+    expect(p.sku).to.equal(bru.getVar("articuloSku"));
+  });
+
+  test("validar que la respuesa con la información del articulo contiene ciertos campos", function () {
+    const p = res.getBody().data;
+    ["id", "name", "sku", "is_active", "line", "category", "sale_price", "stock_quantity"].forEach(function (k) {
+      expect(p).to.have.property(k);
+    });
+  });
+}

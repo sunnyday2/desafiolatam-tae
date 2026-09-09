@@ -1,0 +1,31 @@
+meta {
+  name: 02 - Vendedor Puede Listar Clientes
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/clients?sort_direction=asc
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("vendedor tiene permiso clientes.view=200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("la respuesta contiene elemento data tipo arreglo", function () {
+    expect(res.getBody()).to.have.property("data");
+    expect(res.getBody().data).to.be.an("array");
+  });
+}

@@ -1,0 +1,43 @@
+meta {
+  name: 01 - Listar Clientes
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/clients?sort_direction=asc
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("status=200 (OK)", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("respuesta contiene elemento data y es un arreglo", function () {
+    const body = res.getBody();
+    expect(body).to.have.property("data");
+    expect(body.data).to.be.an("array");
+  });
+
+  test("cada cliente tiene estructura esperada", function () {
+    const data = res.getBody().data;
+    if (data.length > 0) {
+      const c = data[0];
+      expect(c).to.have.property("id");
+      expect(c).to.have.property("name");
+      expect(c).to.have.property("cuit");
+      expect(c).to.have.property("customer_code");
+    }
+  });
+}
