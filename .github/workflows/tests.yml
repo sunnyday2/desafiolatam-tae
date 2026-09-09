@@ -94,9 +94,9 @@ jobs:
 
       - name: Install dependencies system dependencies
         run: |
-          sudo apt-get update
+          sudo apt-get update --fix-missing || sudo apt-get update --fix-missing
           sudo apt-get install -y libgbm1 libxss1 libnss3 libatk-bridge2.0-0
-
+    
       - name: Install Playwright browsers
         run: npx playwright install chromium          
     
