@@ -28,29 +28,33 @@ jobs:
       - name: Load Secrets and Run Bruno Tests
         env:
           RAW_ENV_ADMIN: ${{ secrets.ENV_ADMIN }}
+          RAW_ENV_VENDEDOR: ${{ secrets.ENV_VENDEDOR }}
         run: |
-          # 1. Extraer todas las variables requeridas desde el JSON de secretos
+          # 1. Extraer variables del admin desde ENV_ADMIN
           ADMIN_USER=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_USER // empty')
           ADMIN_PASS=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_PASS // empty')
           BACKEND_BASE_URL=$(echo "$RAW_ENV_ADMIN" | jq -r '.BACKEND_BASE_URL // empty')
           ADMIN_LINE_ID=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_LINE_ID // empty')
           ADMIN_CATEGORY_ID=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_CATEGORY_ID // empty')
-          VENDEDOR_USER=$(echo "$RAW_ENV_ADMIN" | jq -r '.VENDEDOR_USER // empty')
-          VENDEDOR_PASS=$(echo "$RAW_ENV_ADMIN" | jq -r '.VENDEDOR_PASS // empty')
-          VENDEDOR_LINE_ID=$(echo "$RAW_ENV_ADMIN" | jq -r '.VENDEDOR_LINE_ID // empty')
-          VENDEDOR_CATEGORY_ID=$(echo "$RAW_ENV_ADMIN" | jq -r '.VENDEDOR_CATEGORY_ID // empty')
 
-          # 2. Aplicar enmascaramiento estricto
+          # 2. Extraer variables del vendedor desde ENV_VENDEDOR
+          VENDEDOR_USER=$(echo "$RAW_ENV_VENDEDOR" | jq -r '.VENDEDOR_USER // empty')
+          VENDEDOR_PASS=$(echo "$RAW_ENV_VENDEDOR" | jq -r '.VENDEDOR_PASS // empty')
+          VENDEDOR_LINE_ID=$(echo "$RAW_ENV_VENDEDOR" | jq -r '.VENDEDOR_LINE_ID // empty')
+          VENDEDOR_CATEGORY_ID=$(echo "$RAW_ENV_VENDEDOR" | jq -r '.VENDEDOR_CATEGORY_ID // empty')
+
+          # 3. Aplicar enmascaramiento estricto
           echo "::add-mask::$ADMIN_USER"
           echo "::add-mask::$ADMIN_PASS"
           echo "::add-mask::$BACKEND_BASE_URL"
           echo "::add-mask::$VENDEDOR_USER"
           echo "::add-mask::$VENDEDOR_PASS"
 
-          # 3. Eliminar el secreto en crudo de la memoria local
+          # 4. Eliminar los secretos en crudo de la memoria local
           unset RAW_ENV_ADMIN
+          unset RAW_ENV_VENDEDOR
 
-          # 4. Crear el archivo .env en la raíz de la colección Bruno
+          # 5. Crear el archivo .env en la raíz de la colección Bruno
           # Bruno CLI carga process.env desde este archivo, no desde el shell.
           # trap garantiza la eliminación del archivo incluso si los tests fallan.
           trap 'rm -f bruno/.env' EXIT
@@ -61,12 +65,12 @@ jobs:
             "$VENDEDOR_LINE_ID" "$VENDEDOR_CATEGORY_ID" \
             > bruno/.env
 
-          # 5. Ejecutar las colecciones
+          # 6. Ejecutar las colecciones
           cd bruno
           bru run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin
           bru run "04 - Rol Vendedor" --env vendedor
 
-          # 6. Eliminar el archivo .env del disco al terminar
+          # 7. Eliminar el archivo .env del disco al terminar
           cd ..
           rm -f bruno/.env
 
@@ -94,25 +98,29 @@ jobs:
       - name: Load Secrets and Run Playwright Tests
         env:
           RAW_ENV_ADMIN: ${{ secrets.ENV_ADMIN }}
+          RAW_ENV_VENDEDOR: ${{ secrets.ENV_VENDEDOR }}
         run: |
-          # 1. Extraer todas las variables requeridas por Playwright y global-setup.js
+          # 1. Extraer variables del admin desde ENV_ADMIN
           FRONTEND_BASE_URL=$(echo "$RAW_ENV_ADMIN" | jq -r '.FRONTEND_BASE_URL // empty')
           ADMIN_USER=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_USER // empty')
           ADMIN_PASS=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_PASS // empty')
-          VENDEDOR_USER=$(echo "$RAW_ENV_ADMIN" | jq -r '.VENDEDOR_USER // empty')
-          VENDEDOR_PASS=$(echo "$RAW_ENV_ADMIN" | jq -r '.VENDEDOR_PASS // empty')
 
-          # 2. Aplicar enmascaramiento estricto
+          # 2. Extraer variables del vendedor desde ENV_VENDEDOR
+          VENDEDOR_USER=$(echo "$RAW_ENV_VENDEDOR" | jq -r '.VENDEDOR_USER // empty')
+          VENDEDOR_PASS=$(echo "$RAW_ENV_VENDEDOR" | jq -r '.VENDEDOR_PASS // empty')
+
+          # 3. Aplicar enmascaramiento estricto
           echo "::add-mask::$FRONTEND_BASE_URL"
           echo "::add-mask::$ADMIN_USER"
           echo "::add-mask::$ADMIN_PASS"
           echo "::add-mask::$VENDEDOR_USER"
           echo "::add-mask::$VENDEDOR_PASS"
 
-          # 3. Eliminar el secreto en crudo
+          # 4. Eliminar los secretos en crudo
           unset RAW_ENV_ADMIN
+          unset RAW_ENV_VENDEDOR
 
-          # 4. Crear el archivo .env en la raíz del proyecto
+          # 5. Crear el archivo .env en la raíz del proyecto
           # playwright.config.js lo carga con dotenv.config(), igual que en local.
           # trap garantiza la eliminación incluso si los tests fallan.
           trap 'rm -f .env' EXIT
@@ -121,7 +129,7 @@ jobs:
             "$VENDEDOR_USER" "$VENDEDOR_PASS" \
             > .env
 
-          # 5. Ejecutar los tests
+          # 6. Ejecutar los tests
           npx playwright test
 
 
