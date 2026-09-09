@@ -79,7 +79,7 @@ Denegado"), de acuerdo con los permisos. Las credenciales estan guardadas en
 ## Setup
 
 ```bash
-cd tests/e2e-proyecto-final
+cd tests
 npm install
 npx playwright install chromium
 ```
