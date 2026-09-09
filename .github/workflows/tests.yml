@@ -1,4 +1,5 @@
-name: Playwright/Bruno Tests
+name: CI Playwright/Bruno Tests
+
 on:
   push:
     branches: [ main, master ]
@@ -6,14 +7,57 @@ on:
     branches: [ main, master ]
 
 jobs:
-  playwright:
-    timeout-minutes: 60
+  bruno-tests:
+    name: Bruno backend API tests
     runs-on: ubuntu-latest
+    environment: BRUNO_TEST
+    timeout-minutes: 15
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
 
-      - name: Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+
+      - name: Install Bruno CLI
+        run: npm install -g @usebruno/cli
+
+      - name: Load Secrets and Run Bruno Tests
+        env:
+          RAW_ENV_ADMIN: ${{ secrets.ENV_ADMIN }}
+        run: |
+          # 1. Extraer y enmascarar inmediatamente las variables para que GitHub Actions las censure en todos los logs
+          ADMIN_USER=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_USER // empty')
+          ADMIN_PASS=$(echo "$RAW_ENV_ADMIN" | jq -r '.ADMIN_PASS // empty')
+          
+          echo "::add-mask::$ADMIN_USER"
+          echo "::add-mask::$ADMIN_PASS"
+          
+          # Exportar para los siguientes comandos dentro del mismo step
+          export ADMIN_USER
+          export ADMIN_PASS
+          
+          # 2. Desarmar la variable JSON original para evitar filtraciones accidentales
+          unset RAW_ENV_ADMIN
+          
+          # 3. Navegar al directorio de la colección y ejecutar Bruno
+          cd bruno
+          bru run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin
+          bru run "04 - Rol Vendedor" --env vendedor
+
+  playwright-tests:
+    name: Playwright frontend tests
+    runs-on: ubuntu-latest
+    environment: BRUNO_TEST
+
+    steps:
+      - name: Checkout
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: lts/*
@@ -24,18 +68,19 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run Playwright tests
-        # Los secretos se inyectan como variables de entorno del proceso.
-        # GitHub Actions los enmascara automáticamente en los logs.
-        # dotenv los lee desde process.env si no encuentra el archivo .env.
+      - name: Load Secrets and Run Playwright Tests
         env:
-          FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
-          ADMIN_USER: ${{ secrets.ADMIN_USER }}
-          ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
-          VENDEDOR_USER: ${{ secrets.VENDEDOR_USER }}
-          VENDEDOR_PASS: ${{ secrets.VENDEDOR_PASS }}
-          IMCOARCA_ALLOW_WRITES: "0"
-        run: npx playwright test
+          RAW_ENV_ADMIN: ${{ secrets.ENV_ADMIN }}
+        run: |
+          # Extraer y aplicar enmascaramiento estricto
+          FRONTEND_BASE_URL=$(echo "$RAW_ENV_ADMIN" | jq -r '.FRONTEND_BASE_URL // empty')
+          echo "::add-mask::$FRONTEND_BASE_URL"
+          export FRONTEND_BASE_URL
+          
+          unset RAW_ENV_ADMIN
+          
+          IMCOARCA_ALLOW_WRITES=1 npx playwright test
+
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
@@ -44,37 +89,3 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
-
-  bruno:
-    name: Bruno API tests
-    runs-on: ubuntu-latest
-    environment: bruno_test
-    timeout-minutes: 15
-    env:
-      BASE_URL: ${{ secrets.BACKEND_BASE_URL }}
-      ADMIN_USER: ${{ secrets.ADMIN_USER }}
-      ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
-      ADMIN_LINE_ID: ${{ secrets.ADMIN_LINE_ID }}
-      ADMIN_CATEGORY_ID: ${{ secrets.ADMIN_CATEGORY_ID }}
-      VENDEDOR_USER: ${{ secrets.VENDEDOR_USER }}
-      VENDEDOR_PASS: ${{ secrets.VENDEDOR_PASS }}
-      VENDEDOR_LINE_ID: ${{ secrets.VENDEDOR_LINE_ID }}
-      VENDEDOR_CATEGORY_ID: ${{ secrets.VENDEDOR_CATEGORY_ID }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: lts/*
-
-      - name: Install Bruno CLI
-        run: npm install -g @usebruno/cli
-
-      - name: Run Bruno API tests (admin env)
-        run: bru run "01 - Auth" "02 - Clientes" "03 - Articulos" --env admin
-
-      - name: Run Bruno API tests (vendedor env)
-        run: bru run "04 - Rol Vendedor" --env vendedor
