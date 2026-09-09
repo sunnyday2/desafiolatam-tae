@@ -1,7 +1,6 @@
 # E2E Suite
 
-Playwright (JavaScript) end-to-end tests para Núcleo ERP:
-https://ADMIN.leonardojose.dev
+Playwright (JavaScript) end-to-end tests para Núcleo ERP.
 
 ## Estructura del proyecto
 
@@ -35,7 +34,7 @@ desafiolatam-tae/
 │   └── dashboard.feature         # Panel principal (indicadores)
 ├── bruno/                        # Bruno API test collection (see bruno/README.md)
 └── docs/
-    └── screenshots/              # Reference screenshots captured during discovery
+    └── screenshots/              # Screenshots
 ```
 
 La carpeta `features/` tiene escenarios de prueba definidos con la sintaxis de
@@ -88,10 +87,16 @@ Lad credenciales y configuraciones deben estar ne la raiz dentro de `.env`:
 
 ```
 FRONTEND_BASE_URL=http://localhost
+BACKEND_BASE_URL=
 ADMIN_USER=
 ADMIN_PASS=
+ADMIN_LINE_ID=
+ADMIN_CATEGORY_ID=
 VENDEDOR_USER=
 VENDEDOR_PASS=
+VENDEDOR_LINE_ID=
+VENDEDOR_CATEGORY_ID=
+PLAYWRIGHT_CHROMIUM_CHANNEL=chrome
 IMCOARCA_ALLOW_WRITES=0
 ```
 
